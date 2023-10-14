@@ -39,7 +39,7 @@ type Config struct {
 // HTMLdiff finds all the differences in the versions of HTML snippits,
 // versions[0] is the original, all other versions are the edits to be compared.
 // The resulting merged HTML snippits are as many as there are edits to compare.
-func (c *Config) HTMLdiff(versions []string) ([]string, error) {
+func (c *Config) HTMLdiff(versions []string, T int) ([]string, error) {
 	if len(versions) < 2 {
 		return nil, errors.New("there must be at least two versions to diff, the 0th element is the base")
 	}
@@ -92,7 +92,7 @@ func (c *Config) HTMLdiff(versions []string) ([]string, error) {
 			go func(ch chan []diff.Change) {
 				ch <- diff.Diff(len(*sourceTreeRunes[0]), len(*sourceTreeRunes[m+1]), dd)
 			}(ch)
-			to := time.After(time.Second * 3)
+			to := time.After(time.Second * T)
 			select {
 			case <-to:
 				parallelErrors <- errors.New("diff.Diff() took too long")
